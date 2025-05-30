@@ -1,0 +1,94 @@
+@startuml DiagramaDeSequencia_RegistrarPedido
+' Comentário: Diagrama de Sequência para o Caso de Uso "Registrar Pedido" com Cliente como iniciador
+
+' Aparência
+autonumber "<b>[00]"
+skinparam handwritten false
+skinparam monochrome false
+skinparam shadowing true
+skinparam defaultFontName Arial
+skinparam sequence {
+    ActorBorderColor navy
+    ActorBackgroundColor PaleBlue
+    LifeLineBorderColor black
+    LifeLineBackgroundColor #FFFFF0
+    ParticipantBorderColor navy
+    ParticipantBackgroundColor LightSeaGreen  // Mudança para Garcom
+    BoxBorderColor #333333
+    BoxBackgroundColor #F8F8F8
+}
+skinparam note {
+    BackgroundColor #FFFFCC
+    BorderColor #888888
+}
+
+title Registrar Novo Pedido (Iniciado pelo Cliente)
+
+actor Cliente as C
+participant Garcom as G <<Atendente>>
+' Garçom agora é um participante
+participant Sistema as S
+participant Estoque as E <<Componente>>
+participant Cozinha as CZ <<Interface>>
+participant Bar as BR <<Interface>>
+
+C -> G: Gostaria de fazer um pedido.
+activate G
+
+G -> S: iniciarNovoPedido(idMesa)
+activate S
+S --> G: exibirCardapio()
+deactivate S
+
+loop Para cada item a ser adicionado
+    G -> S: selecionarItem(idItem, quantidade, observacoes)
+    activate S
+    S -> E: verificarDisponibilidade(idItem, quantidade)
+    activate E
+    E --> S: disponibilidade(isDisponivel, detalhes)
+    deactivate E
+
+    alt Item Disponível
+        S --> G: itemAdicionadoComSucesso(detalhesItem)
+    else Item Indisponível
+        S --> G: informarIndisponibilidade(idItem)
+        note left of G: Garçom informa Cliente sobre indisponibilidade e/ou sugere alternativas.
+    end
+    deactivate S
+end
+
+G -> C: confirmarItensPedido()
+activate C
+C --> G: simConfirmar()
+deactivate C
+
+G -> S: confirmarPedido()
+activate S
+S -> S: calcularValorTotal()
+S -> S: registrarPedidoNoBancoDeDados()
+note right of S: Pedido recebe status StatusPedido.AGUARDANDO_PREPARO
+
+alt Contém itens de comida
+    S -> CZ: enviarPedidoParaPreparo(pedidoComida)
+    activate CZ
+    CZ --> S: confirmacaoRecebimento()
+    deactivate CZ
+end
+
+alt Contém itens de bebida
+    S -> BR: enviarPedidoParaPreparo(pedidoBebida)
+    activate BR
+    BR --> S: confirmacaoRecebimento()
+    deactivate BR
+end
+
+S -> S: atualizarStatusPedido(StatusPedido.EM_PREPARO)
+S -> S: atualizarStatusMesa(StatusMesa.OCUPADA)
+
+S --> G: pedidoConfirmadoComSucesso(idPedido, valorTotal, status)
+deactivate S
+
+G --> C: pedidoConfirmadoCliente(idPedido)
+deactivate G
+
+@enduml

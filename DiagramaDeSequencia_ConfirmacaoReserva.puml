@@ -1,0 +1,61 @@
+@startuml DiagramaDeSequencia_ConfirmacaoReserva
+' Diagrama de Sequência para UC14 - Confirmação Automática de Reserva
+
+' Aparência
+skinparam handwritten false
+skinparam monochrome false
+skinparam shadowing true
+skinparam defaultFontName Arial
+skinparam sequence {
+    ActorBorderColor navy
+    ActorBackgroundColor PaleBlue
+    LifeLineBorderColor black
+    LifeLineBackgroundColor #FFFFF0
+    ParticipantBorderColor navy
+    ParticipantBackgroundColor LightSeaGreen
+    BoxBorderColor #333333
+    BoxBackgroundColor #F8F8F8
+}
+skinparam note {
+    BackgroundColor #FFFFCC
+    BorderColor #888888
+}
+
+title Confirmação Automática de Reserva (UC14)
+
+actor Cliente as C
+participant Recepcionista as R
+participant Sistema as S
+participant Mesa as M
+participant Reserva as RV
+
+C -> R: Solicitar reserva (data, hora, pessoas)
+activate R
+R -> S: criarReserva(dadosReserva)
+activate S
+S -> M: verificarDisponibilidade(data, hora, pessoas)
+activate M
+M --> S: disponibilidade(mesasDisponiveis)
+deactivate M
+
+alt Mesas disponíveis
+    S -> RV: registrarReserva(dados, status=StatusReserva.CONFIRMADA)
+    activate RV
+    RV --> S: reservaRegistrada(idReserva, status)
+    deactivate RV
+    S --> R: reservaConfirmada(idReserva, status)
+    deactivate S
+    R --> C: Reserva confirmada!
+    deactivate R
+else Nenhuma mesa disponível
+    S -> RV: registrarReserva(dados, status=StatusReserva.PENDENTE_CONFIRMACAO)
+    activate RV
+    RV --> S: reservaRegistrada(idReserva, status)
+    deactivate RV
+    S --> R: reservaPendente(idReserva, status)
+    deactivate S
+    R --> C: Reserva pendente, aguarde confirmação
+    deactivate R
+end
+
+@enduml

@@ -1,0 +1,122 @@
+@startuml Restaurante
+' Direção e estilo
+left to right direction
+skinparam actorStyle awesome
+skinparam packageStyle rectangle
+skinparam usecase {
+  BackgroundColor #FDFDFD
+  BorderColor #444444
+  ArrowColor #666666
+}
+
+title Diagrama de Casos de Uso - Sistema de Gerenciamento de Restaurante
+
+' Atores com cores diferentes
+actor Gerente #FF5733
+actor "Chef de Cozinha" as Chef #33FF57
+actor Subchef #3357FF
+actor Cozinheiro #FF33F5
+actor "Auxiliar de Cozinha" as AuxCozinha #33FFF5
+actor Garcom as Garçom #F5FF33
+actor Barman #FF8C33
+actor Recepcionista #8C33FF
+actor "Auxiliar de Limpeza" as AuxLimpeza #33FF8C
+
+' Pacote: Gestão de Pessoal
+package "Gestão de Pessoal" {
+  usecase "Gerenciar Funcionários" as UC1
+  usecase "Definir Hierarquias e Permissões" as UC2
+  usecase "Controlar Acesso" as UC3
+  usecase "Registrar Escala de Trabalho e Turnos" as UC4
+}
+
+' Pacote: Cardápio e Estoque
+package "Cardápio e Estoque" {
+  usecase "Gerenciar Cardápio" as UC5
+  usecase "Gerenciar Estoque" as UC6
+  usecase "Notificar Estoque Crítico" as UC7
+  usecase "Gerar Relatório de Consumo" as UC8
+}
+
+' Pacote: Pedidos
+package "Pedidos" {
+  usecase "Registrar Pedido" as UC9
+  usecase "Atualizar Status do Pedido" as UC10
+  usecase "Imprimir Pedido na Cozinha/Bar" as UC11
+}
+
+' Pacote: Mesas, Reservas e Eventos
+package "Mesas, Reservas e Eventos" {
+  usecase "Gerenciar Mesas" as UC12
+  usecase "Visualizar Status das Mesas" as UC13
+  usecase "Gerenciar Reservas" as UC14
+  usecase "Gerenciar Eventos" as UC15
+}
+
+' Atribuição dos casos de uso com cores correspondentes
+Gerente -[#FF5733]-> UC1
+Gerente -[#FF5733]-> UC2
+Gerente -[#FF5733]-> UC3
+Gerente -[#FF5733]-> UC4
+Gerente -[#FF5733]-> UC5
+Gerente -[#FF5733]-> UC6
+Gerente -[#FF5733]-> UC7
+Gerente -[#FF5733]-> UC8
+Gerente -[#FF5733]-> UC12
+Gerente -[#FF5733]-> UC15
+
+Chef -[#33FF57]-> UC1
+Chef -[#33FF57]-> UC4
+Chef -[#33FF57]-> UC5
+Chef -[#33FF57]-> UC6
+Chef -[#33FF57]-> UC7
+Chef -[#33FF57]-> UC8
+
+Subchef -[#3357FF]-> UC5
+Subchef -[#3357FF]-> UC6
+Subchef -[#3357FF]-> UC10
+
+Cozinheiro -[#FF33F5]-> UC6
+Cozinheiro -[#FF33F5]-> UC10
+
+AuxCozinha -[#33FFF5]-> UC6
+
+Garçom -[#F5FF33]-> UC9
+Garçom -[#F5FF33]-> UC10
+Garçom -[#F5FF33]-> UC13
+Garçom -[#F5FF33]-> UC14
+
+Barman -[#FF8C33]-> UC6
+Barman -[#FF8C33]-> UC10
+Barman -[#FF8C33]-> UC11
+
+Recepcionista -[#8C33FF]-> UC12
+Recepcionista -[#8C33FF]-> UC13
+Recepcionista -[#8C33FF]-> UC14
+Recepcionista -[#8C33FF]-> UC15
+
+AuxLimpeza -[#33FF8C]-> UC6
+
+' Relações entre casos de uso
+UC1 ..> UC3 : <<include>>
+UC5 ..> UC6 : <<include>>
+UC9 ..> UC5 : <<include>>
+UC9 ..> UC6 : <<include>>
+UC9 ..> UC12 : <<include>>
+UC10 ..> UC11 : <<include>>
+UC14 ..> UC12 : <<include>>
+UC15 ..> UC12 : <<include>>
+
+' Legenda
+legend right
+|<color:#FF5733>■</color>| Gerente |
+|<color:#33FF57>■</color>| Chef de Cozinha |
+|<color:#3357FF>■</color>| Subchef |
+|<color:#FF33F5>■</color>| Cozinheiro |
+|<color:#33FFF5>■</color>| Auxiliar de Cozinha |
+|<color:#F5FF33>■</color>| Garçom |
+|<color:#FF8C33>■</color>| Barman |
+|<color:#8C33FF>■</color>| Recepcionista |
+|<color:#33FF8C>■</color>| Auxiliar de Limpeza |
+endlegend
+@enduml
